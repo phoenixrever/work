@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Boot Thymeleaf - Bootstrap WebJars</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col ">
+            <ul class="nav nav-pills mt-1">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Active</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                </li>
+            </ul>
+            <div class="input-group mt-5">
+                <input id="number" type="text" class="form-control" placeholder="Recipient's username"
+                       aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
+                <div class="input-group-append" id="button-addon4">
+                    <!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
+                    <button type="button" id="ivData" class="btn btn-danger">Danger</button>
+                </div>
+            </div>
+            <div class="card mt-5">
+                <div class="card-header">
+                    Featured
+                </div>
+                <div class="card-body">
+                    <ul id="show" class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            A list item
+                            <span class="badge badge-primary badge-pill">14</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script>
+    $(document).ready(function () {
+        $("#ivData").click(function () {
+            if ($("#number").val() != '') {
+                $.ajax({
+                    type: "GET",
+                    url: "/iv/" + $("#number").val(),
+                    cache: false,
+                    // dataType:"username:",
+                    success: function (data) {
+                        for (var key in data) {
+                            console.log(key);
+                        }
+                        var str = "";
+                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
+                        str = str + data.id;
+                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
+                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
+                        str = str + data.username;
+                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
+                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
+                        str = str + data.password;
+                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
+                        $("#show").empty();
+                        $("#show").append(str);
+                        console.log(data);
+                    }
+                    ,
+                    error: function (jqXHR) {
+                        console.log("Error: ");
+                    }
+                });
+            } else {
+                alert("请输入条码")
+            }
+
+        });
+    });
+</script>
+</body>
