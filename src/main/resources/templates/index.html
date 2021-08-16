@@ -2,47 +2,61 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Spring Boot Thymeleaf - Bootstrap WebJars</title>
+    <title>二维码生成</title>
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 <div class="container">
     <div class="row">
-        <div class="col ">
-            <ul class="nav nav-pills mt-1">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Active</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
-            </ul>
-            <div class="input-group mt-5">
-                <input id="number" type="text" class="form-control" placeholder="Recipient's username"
+        <div class="col pb-5">
+            <div class="input-group mt-5 input-group-lg">
+                <input id="number" type="text" class="form-control" placeholder="扫描条码" style="text-transform: uppercase"
                        aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
                 <div class="input-group-append" id="button-addon4">
                     <!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
-                    <button type="button" id="ivData" class="btn btn-danger">Danger</button>
+                    <button type="button" id="ivData" class="btn btn-danger">查找</button>
                 </div>
             </div>
             <div class="card mt-5">
                 <div class="card-header">
-                    Featured
+                    <h4>包装号: <span class="badge badge-success" id="packageNO1"></span>
+                        <button type="button" class="btn btn-primary" id="print" style="float:right">打印</button>
+                    </h4>
+
                 </div>
-                <div class="card-body">
-                    <ul id="show" class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            A list item
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                    </ul>
+                <div class="card-body" id="area">
+                    <div id="qrcode"></div>
+                    <div class="row head">
+                        <!--                        <div class="col">-->
+                        <!--                            <ul class="list-group list-group-flush" id="show">-->
+                        <!--                            </ul>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col" id="area">-->
+                        <!--                            <div id="qrcode"></div>-->
+                        <!--                        </div>-->
+
+                        <div class="col-4 title1">Pallet No.</div>
+                        <div class="col-6">
+                            <div class="title2"></div>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                    <div class="row content">
+                        <div class="col-3"></div>
+                        <div class="col-6">
+                            <svg id="packageNo"></svg>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+
+                    <div class="row content">
+                        <div class="col bar" id="show1">
+                        </div>
+                        <div class="col bar" id="show2">>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,42 +65,99 @@
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="/qrcodejs/qrcode.js"></script>
+<!--<script type="text/javascript" src="/print/dist/jQuery.print.min.js"></script>-->
+<script type="text/javascript" src="/printThis/printThis.js"></script>
+<!--<script type="text/javascript" src="/JsBarcode.code128.min.js"></script>-->
+<script type="text/javascript" src="/JsBarcode.code39.min.js"></script>
+<script type="text/javascript" src="/loading/dist/jquery.loading.min.js"></script>
 <script>
     $(document).ready(function () {
-        $("#ivData").click(function () {
+        $("#print").click(function () {
+            $("#area").printThis({
+                importCSS: false,
+                loadCSS: ["http://192.168.1.215:8888/css/bootstrap.min.css", "http://192.168.1.215:8888/css/main.css"],
+                // loadCSS: ["http://localhost:8888/css/bootstrap.min.css", "http://localhost:8888/css/main.css"],
+            })
+        });
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width:150,
+            height:150
+        });
+
+        $('#number').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                makeCode();
+            }
+        });
+
+        function makeCode() {
             if ($("#number").val() != '') {
+                $('body').loading({
+                    theme: 'dark'
+                });
                 $.ajax({
                     type: "GET",
-                    url: "/iv/" + $("#number").val(),
+                    url: "/get/" + $("#number").val(),
                     cache: false,
-                    // dataType:"username:",
                     success: function (data) {
-                        for (var key in data) {
-                            console.log(key);
+                        if (data.length != 0) {
+                            $("#packageNO1").text($("#number").val())
+                            $(".title2").text($("#number").val())
+                            $("#packageNo").text($("#number").val())
+                            var str1 = "";
+                            var str2 = "";
+                            var array = [];
+                            data.forEach((item,index) => {
+                                array.push(item.lotNumber)
+                                if(index<16){
+                                    str1 = str1 + '<div class="no"><span class="first">'+item.itemNo+'</span>'+'<svg class="barcode">'+ item.lotNumber +'</svg></div>';
+                                }else{
+                                    str2 = str2 + '<div class="no"><span class="second">'+item.itemNo+'</span>'+'<svg class="barcode">'+ item.lotNumber +'</svg></div>';
+                                }
+                            })
+                            $("#show1").empty();
+                            $("#show2").empty();
+                            $("#show1").append(str1);
+                            $("#show2").append(str2);
+                            $("#packageNo").JsBarcode($("#packageNo").text(), {
+                                height: 50,
+                                width: 1.5,
+                                font: 'arial',
+                                fontSize: 14,
+                                margin:4
+                            })
+                            $(".barcode").each(function () {
+                                $(this).JsBarcode($(this).text(), {
+                                    height: 39,
+                                    width: 1.5,
+                                    font: 'arial',
+                                    fontSize: 14,
+                                    // textMargin:-3,
+                                    margin:4
+                                })
+                            });
+                            qrcode.makeCode(array.join(";"));
+                        } else {
+                            alert("组件号输错了或者还没包装");
+                            $("#number").val('');
                         }
-                        var str = "";
-                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
-                        str = str + data.id;
-                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
-                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
-                        str = str + data.username;
-                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
-                        str = str + "<li class=\"list-group-item d-flex justify-content-between align-items-center\">";
-                        str = str + data.password;
-                        str = str + '<span class=\"badge badge-primary badge-pill\">' + '14' + '</span></li>';
-                        $("#show").empty();
-                        $("#show").append(str);
-                        console.log(data);
+                        $('body').loading('stop')
                     }
                     ,
                     error: function (jqXHR) {
-                        console.log("Error: ");
+                        $('body').loading('stop')
+                        alert("出错了刷新页面")
                     }
                 });
             } else {
                 alert("请输入条码")
             }
 
+        };
+
+        $("#ivData").click(function () {
+            makeCode();
         });
     });
 </script>
