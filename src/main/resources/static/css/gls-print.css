@@ -1,0 +1,70 @@
+#sad {
+    width: 21cm;
+    height: 29.7cm;
+    background-color: lightblue;
+    position: relative;
+    padding: 2%;
+}
+
+#title {
+    margin-top: 40px;
+    font-size: 35px;
+    font-weight: bold;
+    padding: 5px;
+}
+
+#main {
+    width: 14.2cm;
+    border-right: 1px solid black;
+    display: flex;
+    /*justify-content: space-between;*/
+}
+
+#left {
+    background-color: red;
+}
+
+#right {
+    background-color: skyblue;
+}
+
+#side {
+    position: absolute;
+    right: 10px;
+    top: 22px;
+}
+
+.logo {
+    width: 200px;
+}
+
+.firstbox {
+    margin-top: 20px;
+}
+
+.boxno {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.qrzone {
+    margin-top: 500px;
+}
+
+
+.itemNo {
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+}
+.no{
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+#packageNo{
+ margin-top:30px
+}
+#qrcode{
+    margin-top: 20px;
+}

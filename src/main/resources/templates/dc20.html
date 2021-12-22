@@ -5,30 +5,30 @@
     <title>二维码生成</title>
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/dcMain.css">
 </head>
 <body>
 <div class="container">
     <div class="mt-3">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link active" href="javascript:void(0);">东磁10位</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="http://192.168.1.215:8888/dc20">东磁20位</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="http://192.168.1.215:8888/dc22">东磁22位无二维码</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="http://192.168.1.215:8888/sd">尚德</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="http://192.168.1.215:8888/gls">格力盛</a>
-            </li>
-        </ul>
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+<!--            <a class="nav-link " href="http://localhost:8888/index">东磁10位</a>-->
+            <a class="nav-link " href="http://192.168.1.215:8888/index">东磁10位</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="javascript:void(0);">东磁20位</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link "  href="http://192.168.1.215:8888/dc22">东磁22位无二维码</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://192.168.1.215:8888/sd">尚德</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://192.168.1.215:8888/gls">格力盛</a>
+        </li>
+    </ul>
     </div>
-
     <div class="alert alert-danger alert-dismissible mt-5" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <strong>打印选90%!</strong>
@@ -93,21 +93,21 @@
 <script type="text/javascript" src="/qrcodejs/qrcode.js"></script>
 <!--<script type="text/javascript" src="/print/dist/jQuery.print.min.js"></script>-->
 <script type="text/javascript" src="/printThis/printThis.js"></script>
-<!--<script type="text/javascript" src="/JsBarcode.code128.min.js"></script>-->
-<script type="text/javascript" src="/JsBarcode.code39.min.js"></script>
+<script type="text/javascript" src="/JsBarcode.code128.min.js"></script>
+<!--<script type="text/javascript" src="/JsBarcode.code39.min.js"></script>-->
 <script type="text/javascript" src="/loading/dist/jquery.loading.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#print").click(function () {
             $("#area").printThis({
                 importCSS: false,
-                loadCSS: ["http://192.168.1.215:8888/css/bootstrap.min.css", "http://192.168.1.215:8888/css/main.css"],
-                // loadCSS: ["http://localhost:8888/css/bootstrap.min.css", "http://localhost:8888/css/main.css"],
+                loadCSS: ["http://192.168.1.215:8888/css/bootstrap.min.css", "http://192.168.1.215:8888/css/dcMain.css"],
+                // loadCSS: ["http://localhost:8888/css/bootstrap.min.css", "http://localhost:8888/css/dcMain.css"],
             })
         });
         var qrcode = new QRCode(document.getElementById("qrcode"), {
-            width:150,
-            height:150
+            width:200,
+            height:200
         });
 
         $('#number').bind('keypress', function (event) {
@@ -147,7 +147,7 @@
                             $("#show2").append(str2);
                             $("#packageNo").JsBarcode($("#packageNo").text(), {
                                 height: 50,
-                                width: 1.5,
+                                width: 1.2,
                                 font: 'arial',
                                 fontSize: 14,
                                 margin:4
@@ -155,7 +155,7 @@
                             $(".barcode").each(function () {
                                 $(this).JsBarcode($(this).text(), {
                                     height: 39,
-                                    width: 1.5,
+                                    width: 1.2,
                                     font: 'arial',
                                     fontSize: 14,
                                     // textMargin:-3,

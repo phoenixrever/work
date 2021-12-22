@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>二维码生成</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/another.css">
+</head>
+<body>
+<div class="container">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link " href="http://192.168.1.215:8888/index">东磁10位</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="http://192.168.1.215:8888/dc20">东磁20位</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="http://192.168.1.215:8888/dc22">东磁22位无二维码</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="javascript:void(0);">尚德</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://192.168.1.215:8888/gls">格力盛</a>
+        </li>
+    </ul>
+    <div class="row">
+        <div class="col pb-5">
+            <div class="input-group mt-5 input-group-lg">
+                <input id="number" type="text" class="form-control" placeholder="扫描条码" style="text-transform: uppercase"
+                       aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
+                <div class="input-group-append" id="button-addon4">
+                    <!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
+                    <button type="button" id="ivData" class="btn btn-danger">查找</button>
+                </div>
+            </div>
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h4>包装号: <span class="badge badge-success" id="packageNO1"></span>
+                        <button type="button" class="btn btn-primary" id="print" style="float:right">打印</button>
+                    </h4>
+
+                </div>
+                <div class="card-body" id="area">
+                    <div id="sad">
+                        <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td colspan="2" id="head1">Silicon PV Module</td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top">
+                                    <div class="inner font1">
+                                        <span class="one">MODEL:STP375S-24/Vfw</span>
+                                    </div>
+                                    <div class="inner font1">
+                                        <span class="two">QTY.: <span id="pcs">18</span>pcs</span>
+                                    </div>
+                                    <div class="inner font1">
+                                        <span class="one">GRADE:Excellent</span>
+                                    </div>
+                                    <div class="inner font1">
+                                        <span class="one"></span>
+                                    </div>
+                                    <div class="inner font2">
+                                        <span class="two"></span>
+                                        <span class="one">L210701716</span>
+                                    </div>
+                                    <div class="inner font2">
+                                        <span class="one">项目类组件 375W</span>
+                                    </div>
+                                    <div class="inner font2">
+                                        <span class="two">圆倒角210</span>
+                                        <span class="one">一般</span>
+                                    </div>
+                                    <div class="inner font1">
+                                        <span class="one"></span>
+                                    </div>
+                                    <div class="inner font1" style="height: 80px">
+                                        <span class="two carton">Carton NO.</span>
+                                        <span class="one package"><svg id="packagebar"></svg></span>
+                                    </div>
+                                    <div class="inner font1" style="height: 160px">
+                                        <span class="two mono">MONO</span>
+                                        <span class="two i2">I<span id="subCode">0</span> </span>
+                                        <span class="one" id="qrcode"></span>
+                                    </div>
+                                </td>
+                                <td style="vertical-align: top">
+                                    <table id="table2">
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="/qrcodejs/qrcode.js"></script>
+<!--<script type="text/javascript" src="/print/dist/jQuery.print.min.js"></script>-->
+<script type="text/javascript" src="/printThis/printThis.js"></script>
+<script type="text/javascript" src="/JsBarcode.code128.min.js"></script>
+<!--<script type="text/javascript" src="/JsBarcode.code39.min.js"></script>-->
+<script type="text/javascript" src="/loading/dist/jquery.loading.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#print").click(function () {
+            $("#area").printThis({
+                importCSS: false,
+                loadCSS: ["http://192.168.1.215:8888/css/bootstrap.min.css", "http://192.168.1.215:8888/css/main.css"],
+                // loadCSS: ["http://localhost:8888/css/bootstrap.min.css", "http://localhost:8888/css/print.css"],
+            })
+        });
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width:150,
+            height:150
+        });
+
+        $('#number').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                makeCode();
+            }
+        });
+
+        function makeCode() {
+            if ($("#number").val() != '') {
+                $('body').loading({
+                    theme: 'dark'
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "/get/" + $("#number").val(),
+                    cache: false,
+                    success: function (data) {
+                        console.log(data)
+                        if (data.length != 0) {
+                            $("#packageNO1").text($("#number").val())
+                            $("#packagebar").text($("#number").val())
+                            $("#pcs").text(data.length)
+                            $("#subCode").text(data[0]['subCode'])
+                            str="";
+                            let array=[]
+                            data.forEach((item,index) => {
+                                array.push(item.lotNumber)
+
+                                if(index%2==0){
+                                    str = str + '<tr> <td><svg class="barcode">'+ item.lotNumber +'</svg></td>';
+                                }else{
+                                    str = str + '<td><svg class="barcode">'+ item.lotNumber +'</svg></td></tr>';
+                                }
+                            })
+                            $("#table2").empty();
+                            $("#table2").append(str);
+
+                            $("#packagebar").JsBarcode($("#packagebar").text(), {
+                                height: 30,
+                                width: 1.5,
+                                font: 'arial',
+                                fontSize: 14,
+                                margin:2
+                            })
+                            $(".barcode").each(function () {
+                                $(this).JsBarcode($(this).text(), {
+                                    height: 26,
+                                    width: 1.5,
+                                    font: 'arial',
+                                    fontSize: 10,
+                                    // textMargin:-3,
+                                    margin:1
+                                })
+                            });
+                            qrcode.makeCode(array.join(";"));
+                        } else {
+                            alert("组件号输错了或者还没包装");
+                            $("#number").val('');
+                        }
+                        $('body').loading('stop')
+                    }
+                    ,
+                    error: function (jqXHR) {
+                        $('body').loading('stop')
+                        alert("出错了刷新页面")
+                    }
+                });
+            } else {
+                alert("请输入条码")
+            }
+
+        };
+
+        $("#ivData").click(function () {
+            makeCode();
+        });
+    });
+</script>
+</body>

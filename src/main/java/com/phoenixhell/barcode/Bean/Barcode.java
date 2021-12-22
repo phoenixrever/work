@@ -15,4 +15,6 @@ public class Barcode {
     private String lotNumber;
     @TableField(value = "ItemNo")
     private String itemNo;
+    @TableField(value = "PowersetSubCode")
+    private String subCode;
 }

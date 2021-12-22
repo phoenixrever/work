@@ -17,4 +17,7 @@ spring:
     username: sa
     password: Pengneng.1
 
+#logging:
+#  level:
+#    com.phoenixhell.barcode: debug
 
